@@ -1,0 +1,19 @@
+# Go
+/bin/
+/dist/
+/tmp/
+/coverage/
+/*.exe
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Env
+.env
+
+# Docker
+*.pid

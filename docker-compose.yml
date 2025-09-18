@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16
+    container_name: go-wallet-app-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 254798
+      POSTGRES_DB: wallet_db #DB ismi
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

@@ -1,0 +1,4 @@
+FROM golang:1.22-alpine
+RUN go install ariga.io/atlas/cmd/atlas@latest
+WORKDIR /w
+ENTRYPOINT ["atlas"]

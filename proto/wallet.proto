@@ -1,0 +1,25 @@
+syntax = "proto3";
+package wallet.v1;
+option go_package = "github.com/yourname/wallet-service/api/proto/walletpb";
+option go_package = "/wallet";
+
+message CreateWalletRequest { string user_id = 1; }
+message CreateWalletResponse { int64 id = 1; string user_id = 2; int64 balance = 3; }
+
+message BalanceRequest { string user_id = 1; }
+message BalanceResponse { int64 balance = 1; }
+
+message AmountRequest { string user_id = 1; int64 amount = 2; }
+message AmountResponse { int64 balance = 1; }
+
+message TransactionItem { string type = 1; int64 amount = 2; string created_at = 3; }
+message TransactionsRequest { string user_id = 1; int32 limit = 2; }
+message TransactionsResponse { repeated TransactionItem items = 1; }
+
+service Wallet {
+  rpc CreateWallet(CreateWalletRequest) returns (CreateWalletResponse);
+  rpc Balance(BalanceRequest) returns (BalanceResponse);
+  rpc Deposit(AmountRequest) returns (AmountResponse);
+  rpc Withdraw(AmountRequest) returns (AmountResponse);
+  rpc Transactions(TransactionsRequest) returns (TransactionsResponse);
+}
