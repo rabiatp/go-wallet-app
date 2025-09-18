@@ -15,8 +15,10 @@ import (
 )
 
 type AuthServer struct{ db *ent.Client }
-type WalletService struct {s *service.WalletService}
-func NewAuthServer(db *ent.Client) *AuthServer {return &AuthServer{db: db}}
+type WalletService struct{ s *service.WalletService }
+func NewAuthServer(db *ent.Client, wsvc *service.WalletService) *AuthServer {
+	return &AuthServer{db: db}
+}
 
 type signupDTO struct {
 	Name     string `json:"name"`

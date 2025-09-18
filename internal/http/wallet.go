@@ -25,12 +25,6 @@ func (h *WalletHandler) Deposit(ctx *gin.Context) {
 		status.Errorf(codes.Unavailable, err.Error())
 		return
 	}
-
-	// amount > 0 olmalı
-	if in.Amount.Sign() <= 0 {
-		status.Errorf(codes.Unavailable,  "amount must be positive")
-		return
-	}
 	
 	uidStr, ok := ctx.Get("uid")
 	if !ok {
@@ -56,13 +50,6 @@ func (h *WalletHandler) Withdraw(ctx *gin.Context) {
 	var in walletDTO
 	if err := ctx.ShouldBindJSON(&in); err != nil {
 		status.Errorf(codes.Unavailable, err.Error())
-		return
-	}
-
-	
-	// amount > 0 olmalı çünkü çekme işlemi seçtiği için zate normal değer girecek
-	if in.Amount.Sign() <= 0 {
-		status.Errorf(codes.InvalidArgument, "amount must be positive")
 		return
 	}
 
@@ -108,7 +95,7 @@ func (h *WalletHandler) Balance(ctx *gin.Context) {
 		status.Errorf(codes.NotFound, err.Error())
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"balance": bal})
+	ctx.JSON(http.StatusOK, gin.H{"balance": bal.Balance})
 
 }
 

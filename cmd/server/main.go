@@ -3,13 +3,17 @@ package main
 import (
 	"context"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
+	"github.com/joho/godotenv"
+
 	"github.com/rabiatp/go-wallet-app/internal/db"
 	httpx "github.com/rabiatp/go-wallet-app/internal/http"
-
-	"github.com/joho/godotenv"
+	"github.com/rabiatp/go-wallet-app/internal/repo"
+	"github.com/rabiatp/go-wallet-app/internal/service"
+	"google.golang.org/grpc"
 )
 
 func main() {
@@ -18,21 +22,39 @@ func main() {
 	client := db.NewClient()
 	defer client.Close()
 
-	// Hafif bağlantı testi (Ent üzerinden)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	// if _, err := client.User.Query().Limit(1).Count(ctx); err != nil {
-	// 	// tablo yoksa bile client.Schema.Create zaten oluşturdu; hata gelirse görürüz
-	// }
+	if _, err := client.User.Query().Limit(1).Count(ctx); err != nil {
+		log.Fatalf("db ping: %v", err)
+	}
 
-   if _, err := client.User.Query().Limit(1).Count(ctx); err != nil {
-    log.Fatalf("db ping: %v", err)
-  }
+	//service
+	wr := repo.NewWalletRepo(client)
+	ws := service.NewWalletService(wr)
 
-	r := httpx.Router(client);
-  srv := &http.Server{ Addr: ":8080", Handler: r }
+	//HTTP router
+	r := httpx.Router(client, ws) 
 
-	if err := srv.ListenAndServe(); err != nil {
+	// gRPC server
+	gs := grpc.NewServer() 
+	//walletv1.RegisterWalletServer(gs, grpcserver.NewWalletServer(ws)) 
+
+	//gRPC: :9090
+	go func() {
+		lis, err := net.Listen("tcp", ":9090")
+		if err != nil {
+			log.Fatalf("gRPC listen: %v", err)
+		}
+		log.Println("[gRPC] listening on :9090")
+		if err := gs.Serve(lis); err != nil {
+			log.Fatalf("gRPC serve: %v", err)
+		}
+	}()
+
+	// HTTP: :8080
+	srv := &http.Server{Addr: ":8080", Handler: r}
+	log.Println("[HTTP] listening on :8080")
+	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
 }

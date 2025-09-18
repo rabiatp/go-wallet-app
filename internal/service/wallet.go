@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/rabiatp/go-wallet-app/ent"
@@ -23,19 +25,25 @@ func (s *WalletService) CreateWallet(ctx *gin.Context, userID uuid.UUID, balance
 	return w.ID, nil
 }
 
-func(s *WalletService)GetBallance(ctx *gin.Context, userID uuid.UUID)(decimal.Decimal, error){
-	w, err := s.r.GetBalance(ctx, userID)
-	if err != nil {
-		return decimal.Zero, err
-	}
-	return w.Balance, nil
+func(s *WalletService)GetBallance(ctx *gin.Context, userID uuid.UUID)(*ent.Wallet, error){
+	return s.r.GetBalance(ctx, userID)
 }
 
 func(s *WalletService)Deposit(ctx *gin.Context, userID uuid.UUID, amount decimal.Decimal)(decimal.Decimal, error){
+	// amount > 0 olmalı
+	if amount.Sign() <= 0 {
+		return decimal.Zero, errors.New("amount must be positive")
+	}
+
 	return s.r.DepositAndLog(ctx, userID, amount)
 }
 
 func (s *WalletService) Withdraw(ctx *gin.Context, userID uuid.UUID, amount decimal.Decimal)(decimal.Decimal, error)  {
+	// amount > 0 olmalı
+	if amount.Sign() <= 0 {
+		return decimal.Zero, errors.New("amount must be positive")
+	}
+	
 	return s.r.WithdrawAndLog(ctx, userID, amount)
 }
 

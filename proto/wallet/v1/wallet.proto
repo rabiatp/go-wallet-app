@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package wallet.v1;
+option go_package = "github.com/rabiatp/go-wallet-app/proto/gen/wallet/v1;walletv1";
+
+service Wallet {
+  rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
+  rpc Deposit(DepositRequest) returns (DepositResponse);
+  rpc Withdraw(WithdrawRequest) returns (WithdrawResponse);
+  rpc ListTransactions(ListTransactionsRequest) returns (ListTransactionsResponse);
+}
+
+message GetBalanceRequest { string user_id = 1; }
+message GetBalanceResponse { string balance = 1; }
+
+message DepositRequest { string user_id = 1; string amount = 2; }
+message DepositResponse { string new_balance = 1; }
+
+message WithdrawRequest { string user_id = 1; string amount = 2; }
+message WithdrawResponse { string new_balance = 1; }
+
+message ListTransactionsRequest {
+  string user_id = 1;
+  int32 limit   = 2;
+  int32 offset  = 3;
+}
+
+message Transaction {
+  string id         = 1;
+  string type       = 2;
+  string amount     = 3;
+  string created_at = 4;
+}
+
+message ListTransactionsResponse {
+  repeated Transaction transactions = 1;
+}
