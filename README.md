@@ -67,6 +67,7 @@ atlas migrate apply --dir "file://migrations" --url "postgres://user:pass@localh
 go run ./cmd/server/main.go
 ````
 ## 🌐 API Kullanımı
+https://universal-meteor-279910.postman.co/workspace/Super-Trades~068fd0f9-640e-43bf-85aa-3f13025847a8/collection/19465903-c13d13d8-7f46-4096-ac6a-f96e803fe222?action=share&source=copy-link&creator=19465903
 ## 🔑 Authorization (JWT)
 
 Uygulamada kimlik doğrulama ve yetkilendirme için **JWT (JSON Web Token)** kullanılmaktadır.  
